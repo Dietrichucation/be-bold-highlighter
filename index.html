@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be Bold</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
+        textarea { width: 100%; height: 100px; margin-bottom: 10px; white-space: pre-wrap; overflow-wrap: break-word; }
+        button { padding: 10px; font-size: 16px; margin-right: 10px; }
+        .output { margin-top: 20px; padding: 10px; border: 1px solid #ccc; white-space: pre-wrap; overflow-wrap: break-word; max-width: 100%; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h2 style="display: inline-block; margin-right: auto;">Be Bold: The Ultimate Word Highlighter</h2>
+    <button onclick="clearAll()" style="float: right; font-size: 16px;">Clear All</button>
+    <div style="clear: both;"></div>
+    
+    
+    
+    <label>Paste your word list here (any format):</label>
+    <textarea id="wordList"></textarea>
+    <button onclick="formatWordList()">Format Word List</button>
+    
+    <label>Paste your story text here:</label>
+    <textarea id="storyText"></textarea>
+    
+    <button onclick="highlightWords()">Bold Matching Words</button>
+    
+    <div class="output" id="output" contenteditable="true"></div>
+    <button onclick="copyText()">Copy Text</button>
+    
+    <h3>Detected Verb Derivatives & Plurals:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Word Type</th>
+                <th>Detected Words</th>
+            </tr>
+        </thead>
+        <tbody id="derivativesTable">
+            <tr><td colspan="2">None detected</td></tr>
+        </tbody>
+    </table>
+    
+    <script>
+        function formatWordList() {
+            let words = document.getElementById("wordList").value;
+            words = words.replace(/[^a-zA-Z0-9\n]+/g, " ") // Replace non-word characters with spaces
+                         .split(/\s+/) // Split by spaces or newlines
+                         .filter(word => word.trim().length > 0) // Remove empty words
+                         .join("\n"); // Rejoin into a clean, one-word-per-line format
+            document.getElementById("wordList").value = words;
+        }
+
+        function highlightWords() {
+            formatWordList(); // Ensure the list is formatted before processing
+            let words = document.getElementById("wordList").value.split("\n").map(word => word.trim().toLowerCase());
+            let story = document.getElementById("storyText").value;
+            
+            let verbEndings = ["ing", "ed", "s"]; // Common verb and plural endings
+            let detectedDerivatives = { verbs: new Set(), plurals: new Set() };
+            
+            let formattedStory = story.replace(/\b(\w+)\b/g, function(match) {
+                let lowerMatch = match.toLowerCase();
+                if (words.includes(lowerMatch)) {
+                    return "<b>" + match + "</b>";
+                }
+                
+                // Check for verb derivatives and plurals
+                for (let ending of verbEndings) {
+                    if (lowerMatch.endsWith(ending)) {
+                        let baseWord = lowerMatch.replace(new RegExp(ending + "$"), "");
+                        if (words.includes(baseWord)) {
+                            if (ending === "ing" || ending === "ed") {
+                                detectedDerivatives.verbs.add(match);
+                            } else if (ending === "s") {
+                                detectedDerivatives.plurals.add(match);
+                            }
+                        }
+                    }
+                }
+                return match;
+            });
+            
+            document.getElementById("output").innerHTML = formattedStory; // Remove table formatting
+            updateDerivativesTable(detectedDerivatives);
+        }
+
+        function updateDerivativesTable(detectedDerivatives) {
+            let tableBody = document.getElementById("derivativesTable");
+            tableBody.innerHTML = "";
+            
+            if (detectedDerivatives.verbs.size === 0 && detectedDerivatives.plurals.size === 0) {
+                tableBody.innerHTML = "<tr><td colspan='2'>None detected</td></tr>";
+                return;
+            }
+            
+            if (detectedDerivatives.verbs.size > 0) {
+                tableBody.innerHTML += `<tr><td>Verb Derivatives</td><td>${Array.from(detectedDerivatives.verbs).join(", ")}</td></tr>`;
+            }
+            
+            if (detectedDerivatives.plurals.size > 0) {
+                tableBody.innerHTML += `<tr><td>Plural Nouns</td><td>${Array.from(detectedDerivatives.plurals).join(", ")}</td></tr>`;
+            }
+        }
+
+        function copyText() {
+            let outputDiv = document.getElementById("output");
+            let range = document.createRange();
+            range.selectNode(outputDiv);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand("copy");
+            window.getSelection().removeAllRanges();
+            alert("Formatted text copied!");
+        }
+    
+        function clearAll() {
+            document.getElementById('wordList').value = '';
+            document.getElementById('storyText').value = '';
+            document.getElementById('output').innerHTML = '';
+            document.getElementById('derivativesTable').innerHTML = "<tr><td colspan='2'>None detected</td></tr>";
+        }
+    </script>
+</body>
+</html>
