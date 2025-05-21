@@ -240,7 +240,7 @@
                 step7: "<strong>Clear All:</strong> Use the \"Clear All\" button to reset all fields and start fresh.",
                 languageSpecificsTitle: "Language Specifics:",
                 englishSpecifics: "<strong>English:</strong> Detects common plurals (e.g., `cat` -> `cats`, `city` -> `cities`) and verb derivatives (e.g., `run` -> `running`, `bake` -> `baked`).",
-                spanishSpecifics: "<strong>Español:</strong> Detects common plurals (e.g., `gato` -> `gatos`, `flor` -> `flores`) and a simplified set of verb conjugations for common infinitive endings (`-ar`, `-er`, `-ir`), including gerunds and past participles. <em>Note: Spanish verb conjugation is highly complex; this tool covers common forms but may not include all possible variations.</em>",
+                spanishSpecifics: "<strong>Español:</strong> Detects common plurals (e.g., `gato` -> `gatos`, `flor` -> `flores`) and a simplified set of verb conjugations for common infinitive endings (`-ar`, `-er`, `-ir`), including gerundios and past participles. <em>Note: Spanish verb conjugation is highly complex; this tool covers common forms but may not include all possible variations.</em>",
                 selectLanguageLabel: "Select Language:",
                 wordListLabel: "Paste your word list here (any format):",
                 storyTextLabel: "Paste your story text here:",
@@ -458,6 +458,11 @@
             // Create a temporary div to hold the HTML content
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = outputDiv.innerHTML;
+
+            // Set the background of the temporary div to white or transparent
+            // This ensures that any inherited background from the .output div is removed.
+            tempDiv.style.backgroundColor = 'white'; // Or 'transparent'
+
             tempDiv.style.position = 'absolute';
             tempDiv.style.left = '-9999px'; // Move off-screen
             document.body.appendChild(tempDiv);
