@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Be Bold: The Ultimate Word Highlighter</title>
+    <title id="pageTitle">Be Bold: The Ultimate Word Highlighter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -42,6 +42,25 @@
             border-radius: 5px;
             background-color: white;
             font-size: 14px;
+        }
+        .button-group {
+            margin-bottom: 15px;
+            text-align: right; /* Align language buttons to the right */
+        }
+        .lang-button {
+            padding: 8px 15px;
+            font-size: 14px;
+            margin-left: 5px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: white;
+            color: #007bff;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .lang-button.active, .lang-button:hover {
+            background-color: #007bff;
+            color: white;
         }
         button {
             padding: 10px 20px;
@@ -137,47 +156,141 @@
             text-align: center;
             font-size: 18px;
         }
+        .description-box {
+            background-color: #e0f7fa;
+            border: 1px solid #00bcd4;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            line-height: 1.5;
+            color: #006064;
+        }
+        .description-box p {
+            margin-bottom: 10px;
+        }
+        .description-box p:last-child {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
-    <h2 style="display: inline-block; margin-right: auto;">Be Bold: The Ultimate Word Highlighter</h2>
+    <div class="button-group">
+        <button class="lang-button active" data-lang="en">English</button>
+        <button class="lang-button" data-lang="es">Español</button>
+    </div>
+
+    <h2 id="mainTitle" style="display: inline-block; margin-right: auto;">Be Bold: The Ultimate Word Highlighter</h2>
     <button id="clearAllButton">Clear All</button>
     <div style="clear: both; margin-bottom: 20px;"></div>
 
-    <label for="languageSelect">Select Language:</label>
+    <div class="description-box" id="descriptionBox">
+        </div>
+
+    <label for="languageSelect" id="selectLanguageLabel">Select Language:</label>
     <select id="languageSelect">
         <option value="en">English</option>
         <option value="es">Español</option>
     </select>
 
-    <label for="wordList">Paste your word list here (any format):</label>
+    <label for="wordList" id="wordListLabel">Paste your word list here (any format):</label>
     <textarea id="wordList" placeholder="e.g., run, cat, house, correr, gato, casa"></textarea>
 
-    <label for="storyText">Paste your story text here:</label>
+    <label for="storyText" id="storyTextLabel">Paste your story text here:</label>
     <textarea id="storyText" placeholder="Paste the text you want to highlight here..."></textarea>
 
     <button id="highlightButton">Bold Matching Words</button>
 
-    <h3>Formatted Output:</h3>
+    <h3 id="formattedOutputHeading">Formatted Output:</h3>
     <div class="output" id="output" contenteditable="true"></div>
     <button id="copyTextButton">Copy Formatted Text</button>
 
-    <h3>Detected Verb Derivatives & Plurals:</h3>
+    <h3 id="detectedWordsHeading">Detected Verb Derivatives & Plurals:</h3>
     <table>
         <thead>
             <tr>
-                <th>Word Type</th>
-                <th>Detected Words</th>
+                <th id="wordTypeHeader">Word Type</th>
+                <th id="detectedWordsHeader">Detected Words</th>
             </tr>
         </thead>
         <tbody id="derivativesTable">
-            <tr><td colspan="2">None detected</td></tr>
+            <tr><td colspan="2" id="noneDetectedRow">None detected</td></tr>
         </tbody>
     </table>
 
     <div id="messageBox" class="message-box"></div>
 
     <script>
+        // Translations object
+        const translations = {
+            en: {
+                pageTitle: "Be Bold: The Ultimate Word Highlighter",
+                mainTitle: "Be Bold: The Ultimate Word Highlighter",
+                clearAllButton: "Clear All",
+                descriptionTitle: "Welcome to <strong>Be Bold: The Ultimate Word Highlighter</strong>! This tool helps you quickly identify and highlight specific words, including their common derivatives and plurals, within any text you provide.",
+                howToUseTitle: "How to Use:",
+                step1: "<strong>Select Language:</strong> Choose either English or Español from the dropdown menu. This selection is crucial as it determines the rules used for detecting verb derivatives and plurals.",
+                step2: "<strong>Paste Word List:</strong> In the \"Paste your word list here\" box, enter the words you want to highlight. You can separate them by spaces, commas, or newlines – any format works!",
+                step2Placeholder: "e.g., run, cat, house, correr, gato, casa",
+                step3: "<strong>Paste Story Text:</strong> In the \"Paste your story text here\" box, paste the full text where you want to find and highlight words.",
+                step3Placeholder: "Paste the text you want to highlight here...",
+                step4: "<strong>Bold Matching Words:</strong> Click the \"Bold Matching Words\" button. The formatted text will appear in the \"Formatted Output\" area below.",
+                step5: "<strong>Review Detected Words:</strong> Check the \"Detected Verb Derivatives & Plurals\" table to see which additional forms (like \"running\" from \"run\" or \"casas\" from \"casa\") were highlighted.",
+                step6: "<strong>Copy Formatted Text:</strong> Click \"Copy Formatted Text\" to easily transfer the highlighted text to another document or application.",
+                step7: "<strong>Clear All:</strong> Use the \"Clear All\" button to reset all fields and start fresh.",
+                languageSpecificsTitle: "Language Specifics:",
+                englishSpecifics: "<strong>English:</strong> Detects common plurals (e.g., `cat` -> `cats`, `city` -> `cities`) and verb derivatives (e.g., `run` -> `running`, `bake` -> `baked`).",
+                spanishSpecifics: "<strong>Español:</strong> Detects common plurals (e.g., `gato` -> `gatos`, `flor` -> `flores`) and a simplified set of verb conjugations for common infinitive endings (`-ar`, `-er`, `-ir`), including gerunds and past participles. <em>Note: Spanish verb conjugation is highly complex; this tool covers common forms but may not include all possible variations.</em>",
+                selectLanguageLabel: "Select Language:",
+                wordListLabel: "Paste your word list here (any format):",
+                storyTextLabel: "Paste your story text here:",
+                highlightButton: "Bold Matching Words",
+                formattedOutputHeading: "Formatted Output:",
+                copyTextButton: "Copy Formatted Text",
+                detectedWordsHeading: "Detected Verb Derivatives & Plurals:",
+                wordTypeHeader: "Word Type",
+                detectedWordsHeader: "Detected Words",
+                noneDetectedRow: "None detected",
+                messageCopied: "Formatted text copied!",
+                messageCopyFailed: "Failed to copy text.",
+                messageCleared: "All cleared!"
+            },
+            es: {
+                pageTitle: "Resaltador de Palabras: ¡Sé Audaz!",
+                mainTitle: "Resaltador de Palabras: ¡Sé Audaz!",
+                clearAllButton: "Borrar Todo",
+                descriptionTitle: "¡Bienvenido a <strong>Resaltador de Palabras: ¡Sé Audaz!</strong> Esta herramienta te ayuda a identificar y resaltar rápidamente palabras específicas, incluyendo sus derivados y plurales comunes, dentro de cualquier texto que proporciones.",
+                howToUseTitle: "Cómo Usar:",
+                step1: "<strong>Seleccionar Idioma:</strong> Elige entre English o Español en el menú desplegable. Esta selección es crucial ya que determina las reglas utilizadas para detectar derivados verbales y plurales.",
+                step2: "<strong>Pegar Lista de Palabras:</strong> En el cuadro \"Pegar tu lista de palabras aquí\", ingresa las palabras que deseas resaltar. Puedes separarlas por espacios, comas o saltos de línea – ¡cualquier formato funciona!",
+                step2Placeholder: "ej., correr, gato, casa, run, cat, house",
+                step3: "<strong>Pegar Texto de la Historia:</strong> En el cuadro \"Pegar el texto de tu historia aquí\", pega el texto completo donde deseas encontrar y resaltar palabras.",
+                step3Placeholder: "Pega el texto que quieres resaltar aquí...",
+                step4: "<strong>Poner en Negrita Palabras Coincidentes:</strong> Haz clic en el botón \"Poner en Negrita Palabras Coincidentes\". El texto formateado aparecerá en el área de \"Salida Formateada\" a continuación.",
+                step5: "<strong>Revisar Palabras Detectadas:</strong> Consulta la tabla \"Derivados Verbales y Plurales Detectados\" para ver qué formas adicionales (como \"corriendo\" de \"correr\" o \"cats\" de \"cat\") fueron resaltadas.",
+                step6: "<strong>Copiar Texto Formateado:</strong> Haz clic en \"Copiar Texto Formateado\" para transferir fácilmente el texto resaltado a otro documento o aplicación.",
+                step7: "<strong>Borrar Todo:</strong> Utiliza el botón \"Borrar Todo\" para restablecer todos los campos y empezar de nuevo.",
+                languageSpecificsTitle: "Especificaciones del Idioma:",
+                englishSpecifics: "<strong>Inglés:</strong> Detecta plurales comunes (ej., `cat` -> `cats`, `city` -> `cities`) y derivados verbales (ej., `run` -> `running`, `bake` -> `baked`).",
+                spanishSpecifics: "<strong>Español:</strong> Detecta plurales comunes (ej., `gato` -> `gatos`, `flor` -> `flores`) y un conjunto simplificado de conjugaciones verbales para terminaciones de infinitivo comunes (`-ar`, `-er`, `-ir`), incluyendo gerundios y participios. <em>Nota: La conjugación verbal en español es muy compleja; esta herramienta cubre formas comunes pero puede no incluir todas las variaciones posibles.</em>",
+                selectLanguageLabel: "Seleccionar Idioma:",
+                wordListLabel: "Pega tu lista de palabras aquí (cualquier formato):",
+                storyTextLabel: "Pega el texto de tu historia aquí:",
+                highlightButton: "Poner en Negrita Palabras Coincidentes",
+                formattedOutputHeading: "Salida Formateada:",
+                copyTextButton: "Copiar Texto Formateado",
+                detectedWordsHeading: "Derivados Verbales y Plurales Detectados:",
+                wordTypeHeader: "Tipo de Palabra",
+                detectedWordsHeader: "Palabras Detectadas",
+                noneDetectedRow: "Ninguno detectado",
+                messageCopied: "¡Texto formateado copiado!",
+                messageCopyFailed: "Error al copiar el texto.",
+                messageCleared: "¡Todo borrado!"
+            }
+        };
+
+        let currentLanguage = 'en'; // Default language
+
         // Function to show a custom message box instead of alert()
         function showMessageBox(message, duration = 2000) {
             const msgBox = document.getElementById('messageBox');
@@ -327,16 +440,16 @@
             tableBody.innerHTML = ""; // Clear existing rows
 
             if (detectedDerivatives.verbs.size === 0 && detectedDerivatives.plurals.size === 0) {
-                tableBody.innerHTML = "<tr><td colspan='2'>None detected</td></tr>";
+                tableBody.innerHTML = `<tr id="noneDetectedRow"><td colspan='2'>${translations[currentLanguage].noneDetectedRow}</td></tr>`;
                 return;
             }
 
             if (detectedDerivatives.verbs.size > 0) {
-                tableBody.innerHTML += `<tr><td>Verb Derivatives / Conjugations</td><td>${Array.from(detectedDerivatives.verbs).sort().join(", ")}</td></tr>`;
+                tableBody.innerHTML += `<tr><td>${translations[currentLanguage].wordTypeHeader}</td><td>${Array.from(detectedDerivatives.verbs).sort().join(", ")}</td></tr>`;
             }
 
             if (detectedDerivatives.plurals.size > 0) {
-                tableBody.innerHTML += `<tr><td>Plural Nouns</td><td>${Array.from(detectedDerivatives.plurals).sort().join(", ")}</td></tr>`;
+                tableBody.innerHTML += `<tr><td>${translations[currentLanguage].detectedWordsHeader}</td><td>${Array.from(detectedDerivatives.plurals).sort().join(", ")}</td></tr>`;
             }
         }
 
@@ -345,10 +458,10 @@
             // Use the modern Clipboard API if available, fallback to execCommand
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(outputDiv.innerText).then(() => {
-                    showMessageBox("Formatted text copied!");
+                    showMessageBox(translations[currentLanguage].messageCopied);
                 }).catch(err => {
                     console.error('Could not copy text: ', err);
-                    showMessageBox("Failed to copy text.");
+                    showMessageBox(translations[currentLanguage].messageCopyFailed);
                 });
             } else {
                 // Fallback for older browsers
@@ -358,31 +471,108 @@
                 window.getSelection().addRange(range);
                 try {
                     document.execCommand("copy");
-                    showMessageBox("Formatted text copied!");
+                    showMessageBox(translations[currentLanguage].messageCopied);
                 } catch (err) {
                     console.error('Fallback: Could not copy text: ', err);
-                    showMessageBox("Failed to copy text.");
+                    showMessageBox(translations[currentLanguage].messageCopyFailed);
                 }
                 window.getSelection().removeAllRanges();
             }
         }
 
         function clearAll() {
-            document.getElementById('languageSelect').value = 'en'; // Reset language
+            document.getElementById('languageSelect').value = 'en'; // Reset language dropdown
+            currentLanguage = 'en'; // Reset current language variable
+            updateContent(currentLanguage); // Update all text to English
             document.getElementById('wordList').value = '';
             document.getElementById('storyText').value = '';
             document.getElementById('output').innerHTML = '';
-            document.getElementById('derivativesTable').innerHTML = "<tr><td colspan='2'>None detected</td></tr>";
-            showMessageBox("All cleared!");
+            updateDerivativesTable({ verbs: new Set(), plurals: new Set() }); // Clear table content
+            showMessageBox(translations[currentLanguage].messageCleared);
         }
+
+        function updateContent(lang) {
+            currentLanguage = lang;
+            const t = translations[lang];
+
+            document.getElementById('pageTitle').textContent = t.pageTitle;
+            document.getElementById('mainTitle').textContent = t.mainTitle;
+            document.getElementById('clearAllButton').textContent = t.clearAllButton;
+
+            // Description Box
+            const descriptionBox = document.getElementById('descriptionBox');
+            descriptionBox.innerHTML = `
+                <p>${t.descriptionTitle}</p>
+                <p>
+                    <strong>${t.howToUseTitle}</strong>
+                    <ol>
+                        <li>${t.step1}</li>
+                        <li>${t.step2}</li>
+                        <li>${t.step3}</li>
+                        <li>${t.step4}</li>
+                        <li>${t.step5}</li>
+                        <li>${t.step6}</li>
+                        <li>${t.step7}</li>
+                    </ol>
+                </p>
+                <p>
+                    <strong>${t.languageSpecificsTitle}</strong>
+                    <ul>
+                        <li>${t.englishSpecifics}</li>
+                        <li>${t.spanishSpecifics}</li>
+                    </ul>
+                </p>
+            `;
+
+            document.getElementById('selectLanguageLabel').textContent = t.selectLanguageLabel;
+            document.getElementById('languageSelect').value = lang; // Set dropdown value
+
+            document.getElementById('wordListLabel').textContent = t.wordListLabel;
+            document.getElementById('wordList').placeholder = t.step2Placeholder;
+
+            document.getElementById('storyTextLabel').textContent = t.storyTextLabel;
+            document.getElementById('storyText').placeholder = t.step3Placeholder;
+
+            document.getElementById('highlightButton').textContent = t.highlightButton;
+            document.getElementById('formattedOutputHeading').textContent = t.formattedOutputHeading;
+            document.getElementById('copyTextButton').textContent = t.copyTextButton;
+            document.getElementById('detectedWordsHeading').textContent = t.detectedWordsHeading;
+            document.getElementById('wordTypeHeader').textContent = t.wordTypeHeader;
+            document.getElementById('detectedWordsHeader').textContent = t.detectedWordsHeader;
+
+            // Update active language button
+            document.querySelectorAll('.lang-button').forEach(button => {
+                if (button.dataset.lang === lang) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+
+            // Re-render derivatives table to update "None detected" if applicable
+            updateDerivativesTable({ verbs: new Set(), plurals: new Set() });
+        }
+
 
         // Attach event listeners
         document.getElementById('highlightButton').addEventListener('click', highlightWords);
         document.getElementById('copyTextButton').addEventListener('click', copyText);
         document.getElementById('clearAllButton').addEventListener('click', clearAll);
 
-        // Initial setup for the derivatives table
-        updateDerivativesTable({ verbs: new Set(), plurals: new Set() });
+        document.querySelectorAll('.lang-button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                updateContent(event.target.dataset.lang);
+            });
+        });
+
+        // Sync language dropdown with button selection
+        document.getElementById('languageSelect').addEventListener('change', (event) => {
+            updateContent(event.target.value);
+        });
+
+
+        // Initial setup
+        updateContent(currentLanguage); // Load content for default language on page load
     </script>
 </body>
 </html>
