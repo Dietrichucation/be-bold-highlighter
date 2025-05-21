@@ -3,36 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Be Bold</title>
+    <title>Be Bold: The Ultimate Word Highlighter</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
-        textarea { width: 100%; height: 100px; margin-bottom: 10px; white-space: pre-wrap; overflow-wrap: break-word; }
-        button { padding: 10px; font-size: 16px; margin-right: 10px; }
-        .output { margin-top: 20px; padding: 10px; border: 1px solid #ccc; white-space: pre-wrap; overflow-wrap: break-word; max-width: 100%; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        th { background-color: #f4f4f4; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h2 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Include padding in width */
+            font-size: 14px;
+            resize: vertical;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+        #highlightButton {
+            background-color: #28a745; /* Green */
+            color: white;
+        }
+        #highlightButton:hover {
+            background-color: #218838;
+        }
+        #clearAllButton {
+            background-color: #dc3545; /* Red */
+            color: white;
+            float: right; /* Align to the right */
+        }
+        #clearAllButton:hover {
+            background-color: #c82333;
+        }
+        #copyTextButton {
+            background-color: #007bff; /* Blue */
+            color: white;
+            margin-top: 10px;
+        }
+        #copyTextButton:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: #e9f7ff;
+            min-height: 150px;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            font-size: 14px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden; /* For rounded corners on table */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            color: #555;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        h3 {
+            margin-top: 30px;
+            color: #007bff;
+        }
+        .message-box { /* Styling for custom message box */
+            display: none; /* Hidden by default */
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #4CAF50; /* Green background */
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-align: center;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
     <h2 style="display: inline-block; margin-right: auto;">Be Bold: The Ultimate Word Highlighter</h2>
-    <button onclick="clearAll()" style="float: right; font-size: 16px;">Clear All</button>
-    <div style="clear: both;"></div>
-    
-    
-    
-    <label>Paste your word list here (any format):</label>
-    <textarea id="wordList"></textarea>
-    
-    
-    <label>Paste your story text here:</label>
-    <textarea id="storyText"></textarea>
-    
-    <button onclick="highlightWords()">Bold Matching Words</button>
-    
+    <button id="clearAllButton">Clear All</button>
+    <div style="clear: both; margin-bottom: 20px;"></div>
+
+    <label for="languageSelect">Select Language:</label>
+    <select id="languageSelect">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+    </select>
+
+    <label for="wordList">Paste your word list here (any format):</label>
+    <textarea id="wordList" placeholder="e.g., run, cat, house, correr, gato, casa"></textarea>
+
+    <label for="storyText">Paste your story text here:</label>
+    <textarea id="storyText" placeholder="Paste the text you want to highlight here..."></textarea>
+
+    <button id="highlightButton">Bold Matching Words</button>
+
+    <h3>Formatted Output:</h3>
     <div class="output" id="output" contenteditable="true"></div>
-    <button onclick="copyText()">Copy Text</button>
-    
+    <button id="copyTextButton">Copy Formatted Text</button>
+
     <h3>Detected Verb Derivatives & Plurals:</h3>
     <table>
         <thead>
@@ -45,86 +174,215 @@
             <tr><td colspan="2">None detected</td></tr>
         </tbody>
     </table>
-    
+
+    <div id="messageBox" class="message-box"></div>
+
     <script>
-        function formatWordList() {
-            let words = document.getElementById("wordList").value;
-            words = words.replace(/[^a-zA-Z0-9\n]+/g, " ") // Replace non-word characters with spaces
-                         .split(/\s+/) // Split by spaces or newlines
-                         .filter(word => word.trim().length > 0) // Remove empty words
-                         .join("\n"); // Rejoin into a clean, one-word-per-line format
-            document.getElementById("wordList").value = words;
+        // Function to show a custom message box instead of alert()
+        function showMessageBox(message, duration = 2000) {
+            const msgBox = document.getElementById('messageBox');
+            msgBox.textContent = message;
+            msgBox.style.display = 'block';
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, duration);
+        }
+
+        function getWordForms(word, language) {
+            let forms = [word]; // Always include the original word
+
+            if (language === 'en') {
+                // English Pluralization
+                if (word.endsWith('s') || word.endsWith('x') || word.endsWith('z') || word.endsWith('ch') || word.endsWith('sh')) {
+                    forms.push(word + 'es');
+                } else if (word.endsWith('y') && !/[aeiou]y$/.test(word)) { // Ends in consonant + y
+                    forms.push(word.slice(0, -1) + 'ies');
+                } else {
+                    forms.push(word + 's');
+                }
+
+                // English Verb Derivatives (simplified)
+                if (word.length > 2) { // Avoid very short words for derivatives
+                    if (word.endsWith('e') && word.length > 3) { // e.g., bake -> baked, baking
+                        forms.push(word.slice(0, -1) + 'd');
+                        forms.push(word.slice(0, -1) + 'ing');
+                    } else if (/[aeiou][bcdfghjklmnpqrstvwxyz]$/.test(word) && word.length > 3 && !word.endsWith('ing') && !word.endsWith('ed')) { // CVC pattern for doubling, e.g., run -> running, hopped
+                        forms.push(word + word.slice(-1) + 'ed');
+                        forms.push(word + word.slice(-1) + 'ing');
+                    } else { // General case
+                        forms.push(word + 'ed');
+                        forms.push(word + 'ing');
+                    }
+                }
+            } else if (language === 'es') {
+                // Spanish Pluralization (simplified)
+                if (/[aeiou]$/.test(word)) { // Ends in vowel
+                    forms.push(word + 's');
+                } else if (/[bcdfghjklmnpqrstvwxyz]$/.test(word)) { // Ends in consonant
+                    forms.push(word + 'es');
+                }
+
+                // Spanish Verb Conjugations (very simplified - focuses on common infinitives)
+                if (word.endsWith('ar')) {
+                    forms.push(word.slice(0, -2) + 'ando'); // gerund
+                    forms.push(word.slice(0, -2) + 'ado'); // past participle
+                    forms.push(word.slice(0, -2) + 'a'); // 3rd person singular present
+                    forms.push(word.slice(0, -2) + 'as'); // 2nd person singular present
+                    forms.push(word.slice(0, -2) + 'amos'); // 1st person plural present
+                    forms.push(word.slice(0, -2) + 'an'); // 3rd person plural present
+                    forms.push(word.slice(0, -2) + 'é'); // 1st person singular preterite
+                } else if (word.endsWith('er')) {
+                    forms.push(word.slice(0, -2) + 'iendo'); // gerund
+                    forms.push(word.slice(0, -2) + 'ido'); // past participle
+                    forms.push(word.slice(0, -2) + 'e'); // 3rd person singular present
+                    forms.push(word.slice(0, -2) + 'es'); // 2nd person singular present
+                    forms.push(word.slice(0, -2) + 'emos'); // 1st person plural present
+                    forms.push(word.slice(0, -2) + 'en'); // 3rd person plural present
+                    forms.push(word.slice(0, -2) + 'í'); // 1st person singular preterite
+                } else if (word.endsWith('ir')) {
+                    forms.push(word.slice(0, -2) + 'iendo'); // gerund
+                    forms.push(word.slice(0, -2) + 'ido'); // past participle
+                    forms.push(word.slice(0, -2) + 'e'); // 3rd person singular present
+                    forms.push(word.slice(0, -2) + 'es'); // 2nd person singular present
+                    forms.push(word.slice(0, -2) + 'imos'); // 1st person plural present
+                    forms.push(word.slice(0, -2) + 'en'); // 3rd person plural present
+                    forms.push(word.slice(0, -2) + 'í'); // 1st person singular preterite
+                }
+            }
+            return Array.from(new Set(forms)); // Return unique forms
         }
 
         function highlightWords() {
-            formatWordList(); // Ensure the list is formatted before processing
-            let words = document.getElementById("wordList").value.split("\n").map(word => word.trim().toLowerCase());
-            let story = document.getElementById("storyText").value;
-            
-            let verbEndings = ["ing", "ed", "s"]; // Common verb and plural endings
+            let wordsInput = document.getElementById("wordList").value;
+            let storyText = document.getElementById("storyText").value;
+            let language = document.getElementById("languageSelect").value;
+
+            // Process input words
+            let baseWords = wordsInput.split(/[\s,]+/)
+                                     .map(word => word.trim().toLowerCase())
+                                     .filter(word => word.length > 0);
+
+            let allFormsToHighlight = new Set();
             let detectedDerivatives = { verbs: new Set(), plurals: new Set() };
-            
-            let formattedStory = story.replace(/\b(\w+)\b/g, function(match) {
+
+            // Generate all forms for each base word
+            baseWords.forEach(baseWord => {
+                const forms = getWordForms(baseWord, language);
+                forms.forEach(form => allFormsToHighlight.add(form));
+            });
+
+            // Regex to find words in the story, respecting word boundaries
+            // We use a capture group for the word itself so we can re-insert it
+            let formattedStory = storyText.replace(/\b(\w+)\b/g, function(match) {
                 let lowerMatch = match.toLowerCase();
-                if (words.includes(lowerMatch)) {
-                    return "<b>" + match + "</b>";
-                }
-                
-                // Check for verb derivatives and plurals
-                for (let ending of verbEndings) {
-                    if (lowerMatch.endsWith(ending)) {
-                        let baseWord = lowerMatch.replace(new RegExp(ending + "$"), "");
-                        if (words.includes(baseWord)) {
-                            if (ending === "ing" || ending === "ed") {
+
+                if (allFormsToHighlight.has(lowerMatch)) {
+                    // Check if it's a base word or a derivative/plural
+                    if (baseWords.includes(lowerMatch)) {
+                        // It's a base word, just highlight
+                        return "<span style='font-weight: bold; color: red;'>" + match + "</span>";
+                    } else {
+                        // It's a derivative or plural, identify and highlight
+                        // This part is simplified; a more robust solution would track which base word led to this derivative
+                        // For now, we just check against common endings to categorize
+                        if (language === 'en') {
+                            if (lowerMatch.endsWith('ing') || lowerMatch.endsWith('ed')) {
+                                // Simple check for verb forms, assumes base word was in list
+                                let base = lowerMatch.replace(/ing$|ed$/, '');
+                                if (baseWords.includes(base) || baseWords.includes(base + 'e')) { // handle bake/baking
+                                     detectedDerivatives.verbs.add(match);
+                                }
+                            } else if (lowerMatch.endsWith('s') || lowerMatch.endsWith('es') || lowerMatch.endsWith('ies')) {
+                                // Simple check for plurals
+                                let base = lowerMatch.replace(/s$|es$|ies$/, '');
+                                if (baseWords.includes(base) || baseWords.includes(base + 'y')) { // handle fly/flies
+                                    detectedDerivatives.plurals.add(match);
+                                }
+                            }
+                        } else if (language === 'es') {
+                            // Simplified categorization for Spanish
+                            if (lowerMatch.endsWith('ando') || lowerMatch.endsWith('iendo') || lowerMatch.endsWith('ado') || lowerMatch.endsWith('ido')) {
+                                // Gerunds/participles
                                 detectedDerivatives.verbs.add(match);
-                            } else if (ending === "s") {
+                            } else if (lowerMatch.endsWith('s') || lowerMatch.endsWith('es')) {
+                                // Plurals
                                 detectedDerivatives.plurals.add(match);
+                            } else {
+                                // Other conjugations, categorize as verbs
+                                detectedDerivatives.verbs.add(match);
                             }
                         }
+                        return "<span style='font-weight: bold; color: red;'>" + match + "</span>";
                     }
                 }
-                return match;
+                return match; // Return original if no match
             });
-            
-            document.getElementById("output").innerHTML = formattedStory; // Remove table formatting
+
+            document.getElementById("output").innerHTML = formattedStory;
             updateDerivativesTable(detectedDerivatives);
         }
 
         function updateDerivativesTable(detectedDerivatives) {
             let tableBody = document.getElementById("derivativesTable");
-            tableBody.innerHTML = "";
-            
+            tableBody.innerHTML = ""; // Clear existing rows
+
             if (detectedDerivatives.verbs.size === 0 && detectedDerivatives.plurals.size === 0) {
                 tableBody.innerHTML = "<tr><td colspan='2'>None detected</td></tr>";
                 return;
             }
-            
+
             if (detectedDerivatives.verbs.size > 0) {
-                tableBody.innerHTML += `<tr><td>Verb Derivatives</td><td>${Array.from(detectedDerivatives.verbs).join(", ")}</td></tr>`;
+                tableBody.innerHTML += `<tr><td>Verb Derivatives / Conjugations</td><td>${Array.from(detectedDerivatives.verbs).sort().join(", ")}</td></tr>`;
             }
-            
+
             if (detectedDerivatives.plurals.size > 0) {
-                tableBody.innerHTML += `<tr><td>Plural Nouns</td><td>${Array.from(detectedDerivatives.plurals).join(", ")}</td></tr>`;
+                tableBody.innerHTML += `<tr><td>Plural Nouns</td><td>${Array.from(detectedDerivatives.plurals).sort().join(", ")}</td></tr>`;
             }
         }
 
         function copyText() {
             let outputDiv = document.getElementById("output");
-            let range = document.createRange();
-            range.selectNode(outputDiv);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
-            document.execCommand("copy");
-            window.getSelection().removeAllRanges();
-            alert("Formatted text copied!");
+            // Use the modern Clipboard API if available, fallback to execCommand
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(outputDiv.innerText).then(() => {
+                    showMessageBox("Formatted text copied!");
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                    showMessageBox("Failed to copy text.");
+                });
+            } else {
+                // Fallback for older browsers
+                let range = document.createRange();
+                range.selectNode(outputDiv);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                try {
+                    document.execCommand("copy");
+                    showMessageBox("Formatted text copied!");
+                } catch (err) {
+                    console.error('Fallback: Could not copy text: ', err);
+                    showMessageBox("Failed to copy text.");
+                }
+                window.getSelection().removeAllRanges();
+            }
         }
-    
+
         function clearAll() {
+            document.getElementById('languageSelect').value = 'en'; // Reset language
             document.getElementById('wordList').value = '';
             document.getElementById('storyText').value = '';
             document.getElementById('output').innerHTML = '';
             document.getElementById('derivativesTable').innerHTML = "<tr><td colspan='2'>None detected</td></tr>";
+            showMessageBox("All cleared!");
         }
+
+        // Attach event listeners
+        document.getElementById('highlightButton').addEventListener('click', highlightWords);
+        document.getElementById('copyTextButton').addEventListener('click', copyText);
+        document.getElementById('clearAllButton').addEventListener('click', clearAll);
+
+        // Initial setup for the derivatives table
+        updateDerivativesTable({ verbs: new Set(), plurals: new Set() });
     </script>
 </body>
 </html>
