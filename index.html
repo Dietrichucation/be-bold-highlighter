@@ -455,28 +455,31 @@
 
         function copyText() {
             let outputDiv = document.getElementById("output");
-            // Use the modern Clipboard API if available, fallback to execCommand
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(outputDiv.innerText).then(() => {
-                    showMessageBox(translations[currentLanguage].messageCopied);
-                }).catch(err => {
-                    console.error('Could not copy text: ', err);
-                    showMessageBox(translations[currentLanguage].messageCopyFailed);
-                });
-            } else {
-                // Fallback for older browsers
-                let range = document.createRange();
-                range.selectNode(outputDiv);
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
-                try {
-                    document.execCommand("copy");
-                    showMessageBox(translations[currentLanguage].messageCopied);
-                } catch (err) {
-                    console.error('Fallback: Could not copy text: ', err);
-                    showMessageBox(translations[currentLanguage].messageCopyFailed);
-                }
-                window.getSelection().removeAllRanges();
+            // Create a temporary div to hold the HTML content
+            let tempDiv = document.createElement('div');
+            tempDiv.innerHTML = outputDiv.innerHTML;
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px'; // Move off-screen
+            document.body.appendChild(tempDiv);
+
+            // Select the content of the temporary div
+            let range = document.createRange();
+            range.selectNodeContents(tempDiv);
+            let selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            try {
+                // Execute copy command
+                document.execCommand('copy');
+                showMessageBox(translations[currentLanguage].messageCopied);
+            } catch (err) {
+                console.error('Failed to copy formatted text:', err);
+                showMessageBox(translations[currentLanguage].messageCopyFailed);
+            } finally {
+                // Clean up: remove selection and temporary div
+                selection.removeAllRanges();
+                document.body.removeChild(tempDiv);
             }
         }
 
