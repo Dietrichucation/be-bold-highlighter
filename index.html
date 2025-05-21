@@ -243,7 +243,7 @@
                 spanishSpecifics: "<strong>Español:</strong> Detects common plurals (e.g., `gato` -> `gatos`, `flor` -> `flores`) and a simplified set of verb conjugations for common infinitive endings (`-ar`, `-er`, `-ir`), including gerundios and past participles. <em>Note: Spanish verb conjugation is highly complex; this tool covers common forms but may not include all possible variations.</em>",
                 selectLanguageLabel: "Select Language:",
                 wordListLabel: "Paste your word list here (any format):",
-                storyTextLabel: "Paste your story text here:",
+                storyTextLabel: "Pega el texto de tu historia aquí:",
                 highlightButton: "Bold Matching Words",
                 formattedOutputHeading: "Formatted Output:",
                 copyTextButton: "Copy Formatted Text",
@@ -386,7 +386,8 @@
 
             // Regex to find words in the story, respecting word boundaries
             // We use a capture group for the word itself so we can re-insert it
-            let formattedStory = storyText.replace(/\b(\w+)\b/g, function(match) {
+            // Updated regex to include common Spanish characters (ñ, accented vowels)
+            let formattedStory = storyText.replace(/\b([a-zA-Z0-9_áéíóúüñÁÉÍÓÚÜÑ]+)\b/gu, function(match) {
                 let lowerMatch = match.toLowerCase();
 
                 if (allFormsToHighlight.has(lowerMatch)) {
@@ -459,9 +460,14 @@
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = outputDiv.innerHTML;
 
-            // Set the background of the temporary div to white or transparent
-            // This ensures that any inherited background from the .output div is removed.
-            tempDiv.style.backgroundColor = 'white'; // Or 'transparent'
+            // Explicitly set background-color to white for all elements within tempDiv
+            // This targets any inherited or default background from the .output div
+            tempDiv.style.backgroundColor = 'white'; // Set background of the container
+            const allElements = tempDiv.querySelectorAll('*'); // Select all child elements
+            allElements.forEach(el => {
+                el.style.backgroundColor = 'white'; // Set background for all children
+            });
+
 
             tempDiv.style.position = 'absolute';
             tempDiv.style.left = '-9999px'; // Move off-screen
